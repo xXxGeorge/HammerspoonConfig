@@ -1,3 +1,3 @@
-require("autochange")
+require("JumptoFile")
 require("New file")
 require("OpenTerminal")
