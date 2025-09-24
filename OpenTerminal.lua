@@ -7,59 +7,50 @@ function isFinderActive()
     return app and app:name() == "Finder"
 end
 
--- 获取 Finder 当前文件夹路径
-function getFinderCurrentDirectory()
-    local appleScript = [[
-        tell application "Finder"
-            if (count of windows) > 0 then
-                set currentFolder to target of front window
-                return POSIX path of currentFolder
-            else
-                return ""
-            end if
-        end tell
-    ]]
-
-    local success, result = hs.osascript.applescript(appleScript)
-    if success and result and result ~= "" then
-        -- 去除末尾的斜杠（除非是根目录）
-        if result ~= "/" then
-            result = result:gsub("/$", "")
-        end
-        return result
-    else
-        return nil
-    end
-end
-
 -- 在当前目录打开 Terminal
 function openTerminalInCurrentDirectory()
-    local currentDir = getFinderCurrentDirectory()
+    print("使用完整的 AppleScript 方案...")
 
-    if currentDir and currentDir ~= "" then
-        -- 使用 AppleScript 在指定目录打开新 Terminal 窗口
-        local appleScript = string.format([[
+    -- 使用用户提供的完整 AppleScript 方案
+    local appleScript = [[
+        tell application "System Events"
+            set frontApp to name of first process whose frontmost is true
+        end tell
+
+        if frontApp is "Finder" then
+            tell application "Finder"
+                if (window 1 exists) then
+                    set folderPath to (folder of window 1 as alias)'s POSIX path
+                else
+                    set folderPath to (path to home folder as alias)'s POSIX path
+                end if
+            end tell
+
             tell application "Terminal"
-                -- 创建新窗口并设置工作目录
-                set newWindow to do script ""
-                do script "cd \"%s\"" in newWindow
+                activate
+                do script "cd " & quoted form of folderPath
+            end tell
+        else
+            -- 如果不是Finder，打开默认Terminal
+            tell application "Terminal"
                 activate
             end tell
-        ]], currentDir)
+        end if
+    ]]
 
-        local success, result = hs.osascript.applescript(appleScript)
-        if success then
-            print("在目录打开 Terminal 成功: " .. currentDir)
-            return true
-        else
-            print("打开 Terminal 失败: " .. (result or "未知错误"))
-            return false
-        end
-    else
-        -- 如果无法获取当前目录，则打开默认 Terminal
-        hs.execute("open -a Terminal")
-        print("无法获取当前目录，在默认位置打开 Terminal")
+    -- 使用 osascript 执行完整的 AppleScript
+    local success, result = hs.osascript.applescript(appleScript)
+
+    if success then
+        print("AppleScript 执行成功")
         return true
+    else
+        print("AppleScript 执行失败: " .. (result or "未知错误"))
+
+        -- 备用方案：直接打开Terminal
+        print("使用备用方案打开 Terminal")
+        hs.execute("open -a Terminal")
+        return false
     end
 end
 
