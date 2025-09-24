@@ -1,6 +1,7 @@
 -- 在 Finder 中新建文件的快捷键功能
 -- 按 Escape + N 在当前文件夹新建文件
 
+
 -- 检查当前应用是否为 Finder
 function isFinderActive()
     local app = hs.application.frontmostApplication()
