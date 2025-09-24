@@ -1,1 +1,1 @@
-To save and my hammerspoon config
+To save and share my hammerspoon config
