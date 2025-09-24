@@ -7,63 +7,44 @@ function isFinderActive()
     return app and app:name() == "Finder"
 end
 
--- 获取 Finder 当前窗口的路径
-function getFinderCurrentPath()
+-- 在 Finder 中新建文件（使用纯 AppleScript 实现）
+function createNewFileInFinder()
     local appleScript = [[
         tell application "Finder"
             if (count of windows) > 0 then
-                return POSIX path of (target of front window as alias)
+                set currentFolder to target of front window
+                set newFile to make new file at currentFolder
+                select newFile
+                -- 延迟一小段时间让 Finder 处理选择
+                delay 0.1
+                return "success"
             else
-                return POSIX path of (path to desktop folder)
+                return "no_finder_window"
             end if
         end tell
     ]]
 
     local success, result = hs.osascript.applescript(appleScript)
-    if success and result then
-        return result:gsub("%s+$", "") -- 移除末尾空格
-    end
-    return nil
-end
-
--- 在指定路径创建新文件
-function createNewFileAt(path)
-    -- 确保路径以 / 结尾
-    if not path:match("/$") then
-        path = path .. "/"
-    end
-
-    -- 生成唯一的文件名
-    local baseName = "Untitled"
-    local extension = ".txt"
-    local fileName = baseName .. extension
-    local counter = 1
-
-    while hs.fs.pathToAbsolute(path .. fileName) do
-        fileName = baseName .. " " .. counter .. extension
-        counter = counter + 1
-    end
-
-    local fullPath = path .. fileName
-
-    -- 使用 Lua 创建文件
-    local file, err = io.open(fullPath, "w")
-    if file then
-        file:close()
-        print("新文件已创建: " .. fullPath)
-
-        -- 可选：使用 AppleScript 选中新创建的文件
-        local selectScript = string.format([[
-            tell application "Finder"
-                select file "%s"
-                activate
-            end tell
-        ]], fullPath)
-
-        hs.osascript.applescript(selectScript)
-        return true
+    if success then
+        if result == "success" then
+            print("新文件已创建并选中，可以立即重命名")
+            -- 尝试自动进入重命名模式
+            hs.timer.doAfter(0.2, function()
+                hs.osascript.applescript([[
+                    tell application "System Events"
+                        tell process "Finder"
+                            keystroke return
+                        end tell
+                    end tell
+                ]])
+            end)
+            return true
+        elseif result == "no_finder_window" then
+            print("没有打开的 Finder 窗口")
+            return false
+        end
     else
-        print("创建文件失败: " .. (err or "未知错误"))
+        print("创建文件失败: " .. (result or "未知错误"))
         return false
     end
 end
@@ -71,12 +52,7 @@ end
 -- 新建文件的热键函数
 function newFileInFinder()
     if isFinderActive() then
-        local currentPath = getFinderCurrentPath()
-        if currentPath then
-            createNewFileAt(currentPath)
-        else
-            print("无法获取 Finder 当前路径")
-        end
+        createNewFileInFinder()
     else
         print("请先激活 Finder 应用")
     end
