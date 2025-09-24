@@ -1,0 +1,29 @@
+# macOS 系统隐藏文件
+.DS_Store
+._*
+.Spotlight-V100
+.Trashes
+
+# Hammerspoon 自动生成的缓存文件
+*.log
+*.cache
+*.swp
+*~
+temp/
+tmp/
+
+# Hammerspoon 临时文件夹
+hs/_scratch/
+hs/_logs/
+
+# Git submodule 日志或配置
+.git/modules
+.git/config.lock
+.git/index.lock
+
+# 编辑器备份文件
+*.orig
+*.rej
+
+hs/
+Spoons/
