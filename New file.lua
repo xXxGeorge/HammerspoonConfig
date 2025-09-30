@@ -1,5 +1,5 @@
 -- 在 Finder 中新建文件的快捷键功能
--- 按 Escape + N 在当前文件夹新建文件
+-- 按 Right Shift + N 在当前文件夹新建文件
 
 
 -- 检查当前应用是否为 Finder
@@ -60,7 +60,7 @@ function newFileInFinder()
 end
 
 -- 创建热键绑定
-local newFileHotkey = hs.hotkey.new({"escape"}, "n", function()
+local newFileHotkey = hs.hotkey.new({"rightshift"}, "n", function()
     newFileInFinder()
 end)
 
@@ -70,7 +70,7 @@ local appWatcher = hs.application.watcher.new(function(appName, eventType, appOb
         if appName == "Finder" then
             -- Finder 激活时，启用热键
             newFileHotkey:enable()
-            print("Finder 新建文件快捷键已启用 (Escape + N)")
+            print("Finder 新建文件快捷键已启用 (Right Shift + N)")
         else
             -- 其他应用激活时，禁用热键
             newFileHotkey:disable()
@@ -86,7 +86,7 @@ function initNewFileShortcut()
     -- 检查当前是否在 Finder 中，如果是则启用热键
     if isFinderActive() then
         newFileHotkey:enable()
-        print("Finder 新建文件快捷键已启动 (Escape + N)")
+        print("Finder 新建文件快捷键已启动 (Right Shift + N)")
     else
         -- 当前不在 Finder 中，禁用热键
         newFileHotkey:disable()
@@ -97,5 +97,5 @@ end
 initNewFileShortcut()
 
 print("Finder 新建文件功能已加载")
-print("在 Finder 中使用 Escape + N 在当前文件夹新建文件")
+print("在 Finder 中使用 Right Shift + N 在当前文件夹新建文件")
 
