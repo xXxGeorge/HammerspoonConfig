@@ -28,6 +28,7 @@ function openTerminalInCurrentDirectory()
 
             tell application "Terminal"
                 activate
+                delay 0.5
                 do script "cd " & quoted form of folderPath
             end tell
         else
