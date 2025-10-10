@@ -12,12 +12,12 @@ local dirs = {
     -- 常用目录
     a= "/Applications",                      -- Applications
     b = "/Users/horatius/.Trash",            -- Bin
-    c = "/Users/horatius/Content",  -- Content
     d = "/Users/horatius/Desktop",           -- Desktop
     h = "/Users/horatius",                   -- Home Directory
     l = "/Users/horatius/Downloads",         -- Downloads
-    p = "/Users/horatius/Desktop/Project",     -- Projects
-    r = "/Users/horatius/Desktop/PapLearning/_Reference",  -- Reference
+    m = "/Users/horatius/Master",            -- Master
+    p = "/Users/horatius/Master/Project",     -- Projects
+    r = "/Users/horatius/Master/PapLearning/_Reference",  -- Reference
 }
 
 -- 创建应用特定的热键绑定
